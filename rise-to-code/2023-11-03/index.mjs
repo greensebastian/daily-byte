@@ -1,3 +1,4 @@
+// Finance Quick Reaction Force
 import { readFileSync } from 'fs'
 
 const actions = readFileSync('input.txt', 'utf-8').split('\n');

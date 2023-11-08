@@ -1,3 +1,4 @@
+// Closed circuit
 import { readFileSync } from 'fs'
 
 const pointers = readFileSync('input.txt', 'utf-8').split('\n').map(target => parseInt(target));
