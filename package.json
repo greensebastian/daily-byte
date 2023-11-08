@@ -1,0 +1,11 @@
+{
+  "name": "daily-byte",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sgre@netlight.com",
+  "license": "ISC"
+}
