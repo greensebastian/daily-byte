@@ -21,7 +21,18 @@ for(const key of connections.keys()){
     connections.set(key, [...new Set(connections.get(key))].sort((a, b) => a - b));
 }
 
-const getWithPrev = (val, prev) => ({ val, prev });
+const getWithPrev = (value, prev = null) => {
+    return ({ value, prev, [Symbol.iterator]: () => {
+        let cur = {value, prev};
+        return {
+            next: () => {
+                let toReturn = ({ done: !cur, value: cur?.value })
+                cur = cur?.prev;
+                return toReturn;
+            } 
+        };
+    }});
+};
 
 const minimums = new Map();
 
@@ -30,27 +41,34 @@ const getStringIndex = (a, b) => a <= b ? `${a}-${b}` : `${b}-${a}`;
 const exploreNodeBFS = (start, end, force = false) => {
     if (minimums.has(getStringIndex(start, end)) && !force) return;
     let connectionCount = 0;
-    let toExplore = [[start]];
+    let toExplore = [getWithPrev(start)];
     let seen = new Set();
     while(!seen.has(end)){
         connectionCount++;
         const newToExplore = [];
-        for(const path of toExplore){
-            const last = path[path.length - 1];
+        for(const previousNode of toExplore){
+            const last = previousNode.value;
+            if (seen.has(last)) continue;
             seen.add(last);
-            for(const pathStart of path){
+            /*for(const pathStart of path){
                 if (pathStart === last) continue;
                 const idx = getStringIndex(pathStart, last);
                 const existing = minimums.get(idx);
                 if (!existing || existing > connectionCount){
                     minimums.set(idx, connectionCount)
                 }
+            }*/
+
+            const idx = getStringIndex(start, last);
+            const existing = minimums.get(idx);
+            if (!existing || existing > connectionCount){
+                minimums.set(idx, connectionCount)
             }
             
             const newConnections = connections.get(last)
             for(const newConnection of newConnections){
-                if (path.some(old => old === newConnection)) continue;
-                newToExplore.push([...path, newConnection]);
+                //if ([...previousNode].some(old => old === newConnection)) continue;
+                newToExplore.push(getWithPrev(newConnection, previousNode));
             }
         }
         toExplore = newToExplore;
@@ -61,7 +79,7 @@ const allIndices = [...new Set(groups.flatMap(group => group))].sort((a, b) => a
 for(const start of allIndices){
     if (start % 100 === 0) console.info(`Start: ${start}`);
     for(const end of allIndices){
-        //if (end % 100 === 0) console.info(`End: ${end}`);
+        if (end % 100 === 0) console.info(`End: ${end}`);
         exploreNodeBFS(start, end, true);
     }
 }
