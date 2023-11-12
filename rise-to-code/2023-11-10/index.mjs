@@ -41,13 +41,12 @@ const getStringIndex = (a, b) => a <= b ? `${a}-${b}` : `${b}-${a}`;
 const exploreNodeBFS = (start, end, force = false) => {
     if (minimums.has(getStringIndex(start, end)) && !force) return;
     let connectionCount = 0;
-    let toExplore = [getWithPrev(start)];
+    let toExplore = [start];
     let seen = new Set();
     while(!seen.has(end)){
         connectionCount++;
         const newToExplore = [];
-        for(const previousNode of toExplore){
-            const last = previousNode.value;
+        for(const last of toExplore){
             if (seen.has(last)) continue;
             seen.add(last);
             /*for(const pathStart of path){
@@ -68,7 +67,7 @@ const exploreNodeBFS = (start, end, force = false) => {
             const newConnections = connections.get(last)
             for(const newConnection of newConnections){
                 //if ([...previousNode].some(old => old === newConnection)) continue;
-                newToExplore.push(getWithPrev(newConnection, previousNode));
+                newToExplore.push(newConnection);
             }
         }
         toExplore = newToExplore;
@@ -79,7 +78,7 @@ const allIndices = [...new Set(groups.flatMap(group => group))].sort((a, b) => a
 for(const start of allIndices){
     if (start % 100 === 0) console.info(`Start: ${start}`);
     for(const end of allIndices){
-        if (end % 100 === 0) console.info(`End: ${end}`);
+        //if (end % 100 === 0) console.info(`End: ${end}`);
         exploreNodeBFS(start, end, true);
     }
 }
